@@ -70,3 +70,5 @@ mvn exec:java
 2. Push ke branch `dev`.
 3. Tunjukkan job `test` gagal dan pipeline berhenti.
 4. Jelaskan bahwa Continuous Testing menolak perubahan karena test tidak lulus.
+
+Pipeline CI/CD telah berhasil diuji melalui skenario sukses dan gagal.
