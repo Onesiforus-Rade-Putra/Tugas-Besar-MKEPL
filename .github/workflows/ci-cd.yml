@@ -16,6 +16,7 @@ jobs:
   build:
     name: Continuous Integration - Build
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,19 +29,19 @@ jobs:
           cache: maven
 
       - name: Build project without tests
-        working-directory: tubesv2
         run: mvn -B clean package -DskipTests
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: tubesv2-jar
-          path: tubesv2/target/*.jar
+          path: target/*.jar
 
   test:
     name: Continuous Testing - Unit Test
     runs-on: ubuntu-latest
     needs: build
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,7 +54,6 @@ jobs:
           cache: maven
 
       - name: Run unit tests
-        working-directory: tubesv2
         run: mvn -B test
 
       - name: Upload test report
@@ -61,12 +61,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: surefire-test-report
-          path: tubesv2/target/surefire-reports/
+          path: target/surefire-reports/
 
   inspect:
     name: Continuous Inspection - SonarCloud Quality Gate
     runs-on: ubuntu-latest
     needs: test
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -81,7 +82,6 @@ jobs:
           cache: maven
 
       - name: Run SonarCloud analysis and wait for quality gate
-        working-directory: tubesv2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
@@ -91,6 +91,7 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.organization=$SONAR_ORGANIZATION \
             -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+            -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.qualitygate.wait=true
 
   deploy-staging:
@@ -100,6 +101,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment:
       name: staging
+
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -125,6 +127,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment:
       name: production
+
     steps:
       - name: Download staging artifact
         uses: actions/download-artifact@v4
