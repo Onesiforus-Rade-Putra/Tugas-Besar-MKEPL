@@ -67,6 +67,7 @@ jobs:
     name: Continuous Inspection - SonarCloud Quality Gate
     runs-on: ubuntu-latest
     needs: test
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
 
     steps:
       - name: Checkout repository
